@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}
+    Регистрация
+{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4 mt-5">
+            <div class="card shadow-sm mt-5 opacity-100 col-10" style="background-color: #d7dddd;">
+                <div class="card-body mt-3">
+                    <h5 class="card-title text-center mb-4">Регистрация</h5>
+                    <form method="post" action="{% url 'register' %}">
+                        {% csrf_token %}
+                        {% if form.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ form.errors }}
+                            </div>
+                        {% endif %}
+                            <div class="form-group mb-3" style="color: #ffffff;">
+                                <input type="text" class="form-control mt-3" id="username" name="username" placeholder="Имя пользователя" required>
+                                <input type="email" class="form-control mt-3" id="email" name="email" placeholder="Почта" required>
+                                <input type="text" class="form-control mt-3" id="phone_number" name="phone_number" placeholder="Номер телефона" required>
+                                <input type="password" class="form-control mt-3" id="password1" name="password1" placeholder="Придумайте пароль" required>
+                                <input type="password" class="form-control mt-3" id="password2" name="password2" placeholder="Повторите пароль" required>
+                                {% if field.errors %}
+                                    <div class="invalid-feedback">
+                                        {{ field.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Создать аккаунт</button>
+                        <p class="mt-3 text-center"><a href="{% url 'login' %}">Назад ко входу</a></p>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -15,7 +15,7 @@
                           {% endif %}
                       {% endfor %}
                   </div>
-                  <div class="carousel-inner">
+                  <div class="carousel-inner rounded">
                       {% for image in product.images.all %}
                           <a></a>
                           {% if forloop.counter0 == 0 %}
@@ -41,9 +41,13 @@
         </div>
         <div class="col-md-12 col-xl-7 p-3">
             <h1>{{ product.name }}</h1>
-            <p><strong>Описание:</strong> {{ product.description }}</p>
-            <p><strong>Цена:</strong> {{ product.price|stringformat:".0f" }}р</p>
-            <p><strong>Остаток на складе:</strong> {{ product.stock }}</p>
+            <h6><p><strong>Описание:</strong> {{ product.description }}</p></h6>
+            <h6><p><strong>Цена:</strong> <span class="text text-bg-primary p-1 rounded">{{ product.price|stringformat:".0f" }}р</span></p></h6>
+            {% if product.stock %}
+                <p><span class="text text-bg-success rounded p-1">В наличии</span></p>
+            {% else %}
+                <p><span class="text text-bg-danger">Нет наличии</span></p>
+            {% endif %}
             {% if product.characteristics.all %}
                 <h4>Характеристики:</h4>
                 <ul>

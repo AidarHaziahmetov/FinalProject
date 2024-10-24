@@ -15,25 +15,41 @@
         <a class="navbar-brand" href="{#  #}">
             <img src="" alt="Логотип магазина">
         </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNav">
-            <span class="navbar-toggler-icon"></span>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="mainNav">
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class="nav-link" href="{% url 'catalog' %}">Каталог</a></li>
-                {#                    <li class="nav-item"><a class="nav-link" href="">Добавить товар</a></li>#}
-                {% if user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="#">Корзина</a></li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link disable" href="#">Корзина</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Войти</a>
-                    </li>
-                {% endif %}
-            </ul>
-        </div>
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 ps-3">
+                    {% if user.is_superuser %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'admin:index' %}">Админ панель</a>
+                        </li>
+                    {% endif %}
+{#                        <li class="nav-item">#}
+{#                            <a class="nav-link"  href="{% url 'catalog' %}">Главная</a>#}
+{#                        </li>#}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'catalog' %}">Каталог</a>
+{#                        </li><li class="nav-item">#}
+{#                            <a class="nav-link" href="">О нас</a>#}
+{#                        </li>#}
+                        {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="">Корзина</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="">Личный кабинет</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link disabled" href="#">Корзина</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'login' %}">Войти</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+            </div>
     </nav>
 </header>
 <main class="container-fluid">

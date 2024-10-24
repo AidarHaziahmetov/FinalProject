@@ -1,16 +1,17 @@
-from typing import Type
-
 from django.conf import LazySettings
 from django.contrib.admindocs.views import TemplateDetailView
+from django.contrib.auth.views import LoginView
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import TemplateView, ListView, DetailView
+from django.views.generic import TemplateView, ListView, DetailView, FormView
 import os
 from PIL import Image
 from django_filters.views import FilterView
 
 from shop import filters
+from shop.forms import UserRegisterForm
 from shop.models import Product
 
 settings = LazySettings()
@@ -45,3 +46,16 @@ class ProductListWithFilterView(FilterView):
     template_name = "shop/product_list_with_filter.html"
     context_object_name = "products"
     filterset_class = filters.ProductFilter
+
+class RegisterView(FormView):
+    form_class = UserRegisterForm
+    template_name = "registration/register.html"
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+    def get_success_url(self):
+        return reverse_lazy('login')
+
+class MyLoginView(LoginView):
+    def get_success_url(self):
+        return reverse_lazy('catalog')
