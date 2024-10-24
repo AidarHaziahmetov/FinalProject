@@ -3,9 +3,9 @@
 {% block title %}{{ product.name }}{% endblock %}
 
 {% block content %}
-    <div class="row mt-5">
-        <div class="col-md-6">
-            <div id="carouselExampleIndicators" class="carousel slide w-75" data-bs-ride="carousel">
+    <div class="row">
+        <div class="col-md-12 col-lg-5 p-3">
+            <div id="carouselExampleIndicators" class="carousel carousel-dark slide w-75" data-bs-ride="carousel">
                   <div class="carousel-indicators">
                       {% for image in product.images.all %}
                           {% if forloop.counter0 == 0 %}
@@ -39,7 +39,7 @@
                   </button>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-12 col-xl-7 p-3">
             <h1>{{ product.name }}</h1>
             <p><strong>Описание:</strong> {{ product.description }}</p>
             <p><strong>Цена:</strong> {{ product.price|stringformat:".0f" }}р</p>
