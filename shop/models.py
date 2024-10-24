@@ -85,7 +85,7 @@ class Product(models.Model):
         verbose_name="Описание",
     )
     image_preview = models.ImageField(upload_to='product_preview_images/',verbose_name="Превью", default="default.jpg", blank=True, null=True)
-    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name="products", null=True)
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name="products", null=True, verbose_name="Бренд")
     category = models.ManyToManyField(
         Category,
         related_name="clothes",
