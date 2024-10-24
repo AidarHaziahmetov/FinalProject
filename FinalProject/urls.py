@@ -17,12 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from shop.views import BaseView, ProductListView, display_image, ProductDetailView
+from shop.views import BaseView, ProductListView, display_image, ProductDetailView, ProductListWithFilterView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('base/', BaseView.as_view(), name='base'),
-    path('catalog/', ProductListView.as_view(), name='catalog'),
-    path("media/<path:path_to_image>", display_image, name="display_image"),
-    path('product/<int:pk>/', ProductDetailView.as_view(), name='product_detail'),
+    path('product_list/', ProductListView.as_view(), name='product-list'),
+    path("media/<path:path_to_image>", display_image, name="display-image"),
+    path('product/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
+    path('', ProductListWithFilterView.as_view(), name='catalog'),
 ]

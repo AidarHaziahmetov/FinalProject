@@ -1,3 +1,5 @@
+from typing import Type
+
 from django.conf import LazySettings
 from django.contrib.admindocs.views import TemplateDetailView
 from django.http import HttpResponse
@@ -6,6 +8,9 @@ from django.views import View
 from django.views.generic import TemplateView, ListView, DetailView
 import os
 from PIL import Image
+from django_filters.views import FilterView
+
+from shop import filters
 from shop.models import Product
 
 settings = LazySettings()
@@ -34,3 +39,9 @@ class ProductDetailView(DetailView):
     model = Product
     template_name = 'shop/product_detail.html'
     context_object_name = 'product'
+
+class ProductListWithFilterView(FilterView):
+    model = Product
+    template_name = "shop/product_list_with_filter.html"
+    context_object_name = "products"
+    filterset_class = filters.ProductFilter
