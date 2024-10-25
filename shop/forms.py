@@ -12,6 +12,6 @@ class UserRegisterForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = models.User
-        fields = UserCreationForm.Meta.fields + ('email','phone_number')
+        fields = UserCreationForm.Meta.fields + ('email',)
 
 ProductCharacteristicForm = inlineformset_factory(Product, ProductCharacteristic, extra=1, fields=('name', 'value'))

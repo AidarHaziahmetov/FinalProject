@@ -1,10 +1,11 @@
 from django.conf import LazySettings
 from django.contrib.admindocs.views import TemplateDetailView
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views import View
+
 from django.views.generic import TemplateView, ListView, DetailView, FormView
 import os
 from PIL import Image
@@ -59,3 +60,10 @@ class RegisterView(FormView):
 class MyLoginView(LoginView):
     def get_success_url(self):
         return reverse_lazy('catalog')
+
+
+
+
+@login_required
+def profile(request):
+    return render(request, "shop/personal_cabinet.html")

@@ -4,7 +4,6 @@ from django.db import models
 
 
 class User(AbstractUser):
-    phone_number = models.CharField(max_length=12, unique=True)
     ROLE_CHOICES = (
         ("admin", "Администратор"),
         ("manager", "Менеджер"),
@@ -32,6 +31,13 @@ class User(AbstractUser):
 
     def __str__(self) -> str:
         return super().__str__()
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    phone_number = models.CharField(max_length=12, unique=True)
+    avatar = models.ImageField(upload_to="profile_pics/", blank=True, null=True)
+    def __str__(self):
+        return f'Профиль {self.user}'
 
 # Create your models here.
 class Category(models.Model):

@@ -19,9 +19,10 @@ from django.contrib.auth import views
 from django.urls import path, include
 
 from shop.views import BaseView, ProductListView, display_image, ProductDetailView, ProductListWithFilterView, \
-    RegisterView, MyLoginView
+    RegisterView, MyLoginView, profile
 
 urlpatterns = [
+
     path('admin/', admin.site.urls, name='admin'),
     path('base/', BaseView.as_view(), name='base'),
     path('product_list/', ProductListView.as_view(), name='product-list'),
@@ -32,4 +33,5 @@ urlpatterns = [
     path("logout/", views.LogoutView.as_view(), name="logout"),
     path('login/', MyLoginView.as_view(), name='login'),
     path('register/', RegisterView.as_view(), name='register'),
+    path("profile/", profile, name="profile"),
 ]
