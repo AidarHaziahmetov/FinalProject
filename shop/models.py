@@ -194,6 +194,12 @@ class Order(models.Model):
         ('completed', 'Завершен'),
     ), default='pending')
 
+    def get_total_price(self):
+        total = 0
+        for item in self.order_items.all():
+            total += item.get_total_price()
+        return total
+
     def __str__(self):
         return f"Заказ #{self.id}"
 
@@ -203,8 +209,9 @@ class OrderItem(models.Model):
     quantity = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
+    def get_total_price(self):
+        return self.quantity * self.price
+
     def __str__(self):
         return f"Товар: {self.product.name}, Количество: {self.quantity}"
 
-    def get_total_price(self):
-        return self.quantity * self.price

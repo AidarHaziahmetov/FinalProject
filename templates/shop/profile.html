@@ -104,7 +104,7 @@
                                 <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
                                     <!--  Контент для вкладки "Заказы"  -->
                                     {% for order in user.orders.all %}
-                                        <a href="{% url 'order-detail' order.id %}">{{ order }}</a>
+                                        <p><a href="{% url 'order-detail' order.id %}">{{ order }}</a><li class="">Создан: {{ order.created_at }}</li></p>
                                     {% endfor %}
                                 </div>
                                 <div class="tab-pane fade" id="logout" role="tabpanel" aria-labelledby="orders-tab">

@@ -17,7 +17,7 @@
           <td>{{ order_item.product.name }}</td>
           <td>{{ order_item.product.price }}</td>
           <td>{{ order_item.quantity }}</td>
-          <td>{{ order_item.total_price }}</td>
+          <td>{{ order_item.get_total_price }}</td>
         </tr>
       {% endfor %}
     </tbody>

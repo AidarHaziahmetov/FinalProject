@@ -221,7 +221,8 @@ class OrderDetail(LoginRequiredMixin, DetailView):
         object = super(OrderDetail, self).get_object()
 
         if object.user == self.request.user:
-            context['order_items'] = object.order_items.all()
+            context['order_items'] = object.order_items.all().annotate(total_price=F('product__price')*F('quantity'))
+            context['total_price'] = object.get_total_price()
             return context
         else:
             return JsonResponse({'success': False, 'message': 'Чужие заказы смотреть не хорошо!'})
