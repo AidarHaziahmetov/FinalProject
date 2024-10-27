@@ -33,4 +33,7 @@ urlpatterns = [
     path('login/', views.MyLoginView.as_view(), name='login'),
     path('register/', views.RegisterView.as_view(), name='register'),
     path("profile/", views.ProfileView.as_view(), name="profile"),
+    path('add_to_cart/<int:pk>/', views.AddToCartView.as_view(), name='add-to-cart'),
+    path('cart', views.CartView.as_view(), name='cart'),
+    path('update_cart_quantity', views.UpdateCartQuantityView.as_view(), name='update-cart-quantity'),
 ]

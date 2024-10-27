@@ -6,9 +6,17 @@ from django_filters import FilterSet, widgets
 from shop import models
 
 
+class MyRangeWidget(widgets.RangeWidget):
+    def __init__(self, from_attrs=None, to_attrs=None, attrs=None):
+        super(MyRangeWidget, self).__init__(attrs)
+        if from_attrs:
+            self.widgets[0].attrs.update(from_attrs)
+        if to_attrs:
+            self.widgets[1].attrs.update(to_attrs)
+
 class ProductFilter(FilterSet):
-    price_range = django_filters.RangeFilter(field_name='price', label='Цена от и до',
-                                             widget=widgets.RangeWidget(attrs={'class': 'form-control'}))
+    price_range = django_filters.RangeFilter(field_name='price', label='Цена',
+                                             widget=MyRangeWidget(from_attrs={'placeholder':'От'}, to_attrs={'placeholder':'До'}, attrs={'class': 'form-control'}))
     available = django_filters.BooleanFilter(method='filter_available', label='В наличии',
                                              widget=forms.NullBooleanSelect(attrs={'class': 'form-control'}))
     term = django_filters.CharFilter(method='filter_term', label='Поиск по названию и описанию',
