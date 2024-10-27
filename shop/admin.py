@@ -8,6 +8,10 @@ from shop import models
 class UserAdmin(admin.ModelAdmin):
     list_display = ("username", "role")
 
+@admin.register(models.Profile)
+class UserAdmin(admin.ModelAdmin):
+    list_display = ("user",)
+
 
 @admin.register(models.Category)
 class CategoryAdmin(admin.ModelAdmin):
