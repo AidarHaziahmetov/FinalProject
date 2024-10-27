@@ -50,6 +50,14 @@ class ProductDetailView(DetailView):
     model = models.Product
     template_name = 'shop/product_detail.html'
     context_object_name = 'product'
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        object = super(ProductDetailView, self).get_object()
+        context['product'] = object
+        cart = models.Cart.objects.filter(user=self.request.user).first()
+        context['cart_item'] = models.CartItem.objects.filter(product=object.id, cart=cart).first()
+        print(context['cart_item'] )
+        return context
 
 
 class ProductListWithFilterView(FilterView):
@@ -130,6 +138,7 @@ class AddToCartView(LoginRequiredMixin, DetailView):
 
 class RemoveFromCartView(LoginRequiredMixin, DeleteView):
     model = models.CartItem
+    context_object_name = 'cart_item'
     template_name = 'shop/cart_confirm_delete.html'
     success_url = reverse_lazy('cart')
 
