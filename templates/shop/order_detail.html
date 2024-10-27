@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Информация о заказе</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Товар</th>
+        <th>Цена</th>
+        <th>Количество</th>
+        <th>Сумма</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order_item in order_items %}
+        <tr>
+          <td>{{ order_item.product.name }}</td>
+          <td>{{ order_item.product.price }}</td>
+          <td>{{ order_item.quantity }}</td>
+          <td>{{ order_item.total_price }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p>Итого: {{ total_price }}</p>
+    <a href="{% url 'profile' %}" class="btn btn-warning">Вернуться назад</a>
+  
+{% endblock %}

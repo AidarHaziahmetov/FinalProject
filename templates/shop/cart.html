@@ -62,29 +62,8 @@
                         </tfoot>
                     </table>
                     {#        <a href="{% url 'checkout' %}" class="btn btn-primary">Оформить заказ</a>#}
-                    <a href="#" class="btn btn-primary">Оформить заказ</a>
-                    <div class="modal fade" id="confirm-delete-modal" tabindex="-1"
-                         aria-labelledby="confirm-delete-modal-label" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="confirm-delete-modal-label">Подтверждение удаления</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Вы действительно хотите удалить товар <span id="product-name"></span> из корзины?
-                                    </p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена
-                                    </button>
-                                    <button type="button" class="btn btn-danger" id="confirm-delete-btn">Удалить
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <a href="{% url 'checkout' %}" class="btn btn-primary">Оформить заказ</a>
+                    
                 {% else %}
                     <p>Ваша корзина пуста.</p>
                 {% endif %}
@@ -144,6 +123,5 @@
                     console.error('Ошибка обновления корзины:', error);
                 });
         }
-
     </script>
 {% endblock %}

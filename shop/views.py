@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
 
-from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView
+from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView, CreateView
 import os
 from PIL import Image
 from django_filters.views import FilterView
@@ -182,3 +182,46 @@ class UpdateCartQuantityView(LoginRequiredMixin, View):
 
         except (models.Product.DoesNotExist, models.Cart.DoesNotExist, ValueError):
             return JsonResponse({'success': False, 'message': 'Произошла ошибка'})
+
+class CheckoutView(LoginRequiredMixin, CreateView):
+    model = models.Order
+    fields = []  # Нет полей для заполнения пользователем
+    template_name = 'shop/checkout.html'
+    success_url = reverse_lazy('order-success')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cart = models.Cart.objects.filter(user=self.request.user).first()
+        cart_items = cart.cart_items.all()
+        context["cart_items"] = cart_items
+        return context
+    def form_valid(self, form):
+        cart = models.Cart.objects.get_or_create(user=self.request.user)[0]
+        cart_items = cart.cart_items.all()
+        order = form.save(commit=False)
+        order.user = self.request.user
+        order.save()
+        for cart_item in cart_items:
+            models.OrderItem.objects.create(
+                order=order,
+                product=cart_item.product,
+                quantity=cart_item.quantity,
+                price=cart_item.product.price
+            )
+        cart.cart_items.all().delete()
+        return super().form_valid(form)
+
+class OrderSuccessView(LoginRequiredMixin, TemplateView):
+    template_name = 'shop/order_success.html'
+
+class OrderDetail(LoginRequiredMixin, DetailView):
+    model = models.Order
+    template_name = 'shop/order_detail.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        object = super(OrderDetail, self).get_object()
+
+        if object.user == self.request.user:
+            context['order_items'] = object.order_items.all()
+            return context
+        else:
+            return JsonResponse({'success': False, 'message': 'Чужие заказы смотреть не хорошо!'})
