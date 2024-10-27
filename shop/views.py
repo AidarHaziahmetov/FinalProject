@@ -54,9 +54,10 @@ class ProductDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         object = super(ProductDetailView, self).get_object()
         context['product'] = object
-        cart = models.Cart.objects.filter(user=self.request.user).first()
-        context['cart_item'] = models.CartItem.objects.filter(product=object.id, cart=cart).first()
-        print(context['cart_item'] )
+        if self.request.user.is_authenticated:
+            cart = models.Cart.objects.filter(user=self.request.user).first()
+            context['cart_item'] = models.CartItem.objects.filter(product=object, cart=cart).first()
+            print(context['cart_item'] )
         return context
 
 
