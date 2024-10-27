@@ -1,17 +1,27 @@
 import django_filters
+from django import forms
 from django.db.models import Q
-from django_filters import FilterSet
+from django_filters import FilterSet, widgets
 
-from shop.models import Product
+from shop import models
 
 
 class ProductFilter(FilterSet):
-    price_range = django_filters.RangeFilter(field_name='price',label='Цена от и до')
-    available = django_filters.BooleanFilter(method='filter_available', label='В наличии')
-    term = django_filters.CharFilter(method='filter_term', label='Поиск по названию и описанию')
+    price_range = django_filters.RangeFilter(field_name='price', label='Цена от и до',
+                                             widget=widgets.RangeWidget(attrs={'class': 'form-control'}))
+    available = django_filters.BooleanFilter(method='filter_available', label='В наличии',
+                                             widget=forms.NullBooleanSelect(attrs={'class': 'form-control'}))
+    term = django_filters.CharFilter(method='filter_term', label='Поиск по названию и описанию',
+                                     widget=forms.TextInput(attrs={'class': 'form-control'}))
+    brand = django_filters.ModelChoiceFilter(field_name='brand', label='Бренд', queryset=models.Brand.objects.all(),
+                                             widget=forms.Select(attrs={'class': 'form-control'}))
+    category = django_filters.ModelMultipleChoiceFilter(field_name='category', label='Категории',
+                                                        queryset=models.Category.objects.all(),
+                                                        widget=forms.CheckboxSelectMultiple, method='filter_category')
+
     class Meta:
-        model = Product
-        fields = ['term','category','available','price_range', 'brand']
+        model = models.Product
+        fields = ['term', 'category', 'available', 'price_range', 'brand']
 
     def filter_available(self, queryset, name, value):
         if value is None:
@@ -23,5 +33,17 @@ class ProductFilter(FilterSet):
     def filter_term(self, queryset, name, value):
         criteria = Q()
         for term in value.split():
-            criteria &= Q(name__icontains=term)|Q(description__icontains=term)
+            criteria &= Q(name__icontains=term) | Q(description__icontains=term)
         return queryset.filter(criteria).distinct()
+
+    def filter_category(self, queryset, name, value):
+        if value:
+            categories = []
+            for category_id in value:
+                category = models.Category.objects.get(pk=category_id.id)
+                categories.extend(category.get_all_children())  # Используйте get_all_children()
+
+            # Добавьте саму выбранную категорию
+            categories.extend(value)
+            queryset = queryset.filter(category__in=categories).distinct()
+        return queryset
