@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Личный кабинет: {{ user.username }}{% endblock %}
+{% block content %}
+
+    <div class="row ">
+        <div class="col-md-3">
+            <div class="container-fluid mt-5">
+                <div id='avatar_container' class="container border border-black border-0">
+                    {% if user.profile.avatar %}
+                        <img src="{% get_media_prefix %}{{ user.profile.avatar }}"
+                             class="rounded-circle img-fluid mx-auto d-block"
+                             style="width: 300px; height: 300px;" alt="User-avatar">
+                    {% else %}
+                        <img src="https://avatars.mds.yandex.net/i?id=0776231b03a42500ffe93a58496a86ddb08ab983-5252031-images-thumbs&n=13"
+                             class="mx-auto d-block img-fluid" alt="User-avatar">
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="container mt-5">
+                <div class="row justify-content-center">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title text-center mb-4">Мой профиль</h5>
+
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="personal-info-tab" data-bs-toggle="tab"
+                                            data-bs-target="#personal-info" type="button" role="tab"
+                                            aria-controls="personal-info" aria-selected="true">Личная информация
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="orders-tab" data-bs-toggle="tab"
+                                            data-bs-target="#orders" type="button" role="tab" aria-controls="orders"
+                                            aria-selected="false">Заказы
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="orders-tab" data-bs-toggle="tab"
+                                            data-bs-target="#logout" type="button" role="tab" aria-controls="orders"
+                                            aria-selected="false">Выход
+                                    </button>
+                                </li>
+                            </ul>
+                            <div class="tab-content mt-4" id="myTabContent">
+                                <div class="tab-pane fade show active" id="personal-info" role="tabpanel"
+                                     aria-labelledby="personal-info-tab">
+                                    <form method="post" enctype="multipart/form-data">
+                                        {% csrf_token %}
+
+                                        <!--  Данные пользователя  -->
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group mb-3">
+                                                    <label for="id_username" class="form-label">Имя
+                                                        пользователя:</label>
+                                                    <input type="text" class="form-control" id="id_username"
+                                                           name="username" value="{{ user.username }}" readonly>
+                                                </div>
+                                                <div class="form-group mb-3">
+                                                    <label for="id_email" class="form-label">Email:</label>
+                                                    {{ user_form.email }}
+                                                    {% if user_form.email.errors %}
+                                                        <div class="invalid-feedback">
+                                                            {{ user_form.email.errors }}
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            {#                                            <div class="col-md-6">#}
+                                            {#                                                <div class="form-group mb-3">#}
+                                            {#                                                    <label for="id_first_name" class="form-label">Имя:</label>#}
+                                            {#                                                    {{ user_form.first_name }}#}
+                                            {#                                                    {% if user_form.first_name.errors %}#}
+                                            {#                                                        <div class="invalid-feedback">#}
+                                            {#                                                            {{ user_form.first_name.errors }}#}
+                                            {#                                                        </div>#}
+                                            {#                                                    {% endif %}#}
+                                            {#                                                </div>#}
+                                            {#                                            </div>#}
+                                            {#                                            <div class="col-md-6">#}
+                                            {#                                                <div class="form-group mb-3">#}
+                                            {#                                                    <label for="id_last_name" class="form-label">Фамилия:</label>#}
+                                            {#                                                    {{ user_form.last_name }}#}
+                                            {#                                                    {% if user_form.last_name.errors %}#}
+                                            {#                                                        <div class="invalid-feedback">#}
+                                            {#                                                            {{ user_form.last_name.errors }}#}
+                                            {#                                                        </div>#}
+                                            {#                                                    {% endif %}#}
+                                            {#                                                </div>#}
+                                            {#                                            </div>#}
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label for="id_phone_number" class="form-label">Номер телефона:</label>
+                                            {{ user_form.phone_number }}
+                                            {% if form.phone_number.errors %}
+                                                <div class="invalid-feedback">
+                                                    {{ profile_form.phone_number.errors }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <!--  Данные профиля  -->
+                                        <div class="form-group mb-3">
+                                            <label for="id_avatar" class="form-label">Аватар:</label>
+                                            <input type="file" class="form-control-file" id="id_avatar" name="avatar">
+                                        </div>
+
+
+                                        {#                                        <div class="form-group mb-3">#}
+                                        {#                                            <label for="id_address" class="form-label">Адрес:</label>#}
+                                        {#                                            {{ user_form.address }}#}
+                                        {#                                            {% if profile_form.address.errors %}#}
+                                        {#                                                <div class="invalid-feedback">#}
+                                        {#                                                    {{ profile_form.address.errors }}#}
+                                        {#                                                </div>#}
+                                        {#                                            {% endif %}#}
+                                        {#                                        </div>#}
+
+                                        <button type="submit" class="btn btn-primary">Обновить</button>
+                                    </form>
+                                </div>
+                                <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+                                    <!--  Контент для вкладки "Заказы"  -->
+                                    <p>Здесь будет отображаться список заказов пользователя.</p>
+                                </div>
+                                <div class="tab-pane fade" id="logout" role="tabpanel" aria-labelledby="orders-tab">
+                                    <!--  Контент для вкладки "Заказы"  -->
+                                    {% if user.is_authenticated %}
+                                        <form action="{% url 'logout' %}?next=/" method="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger">Выйти из аккаунта</button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -2,7 +2,6 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
-
 class User(AbstractUser):
     ROLE_CHOICES = (
         ("admin", "Администратор"),
@@ -13,7 +12,8 @@ class User(AbstractUser):
     role = models.CharField(
         max_length=20, choices=ROLE_CHOICES, default="customer", verbose_name="Роль"
     )
-
+    phone_number = models.CharField(max_length=20, blank=True)
+    address = models.CharField(max_length=255, blank=True)
 
     class Meta:
         ordering = ("username",)
@@ -32,12 +32,22 @@ class User(AbstractUser):
     def __str__(self) -> str:
         return super().__str__()
 
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
-    phone_number = models.CharField(max_length=12, unique=True)
     avatar = models.ImageField(upload_to="profile_pics/", blank=True, null=True)
+
+    class Meta:
+        ordering = ("user",)
+        verbose_name = "Профиль пользователя"
+        verbose_name_plural = "Профили пользователей"
+
+    def get_email(self):
+        return self.user.email
+
     def __str__(self):
         return f'Профиль {self.user}'
+
 
 # Create your models here.
 class Category(models.Model):
@@ -66,6 +76,7 @@ class Category(models.Model):
     def __str__(self) -> str:
         return self.name
 
+
 class Brand(models.Model):
     name = models.CharField(verbose_name="Название", max_length=255)
     description = models.TextField(
@@ -78,9 +89,10 @@ class Brand(models.Model):
         verbose_name = "Бренд"
         verbose_name_plural = "Бренды"
 
-
     def __str__(self) -> str:
         return self.name
+
+
 class Product(models.Model):
     name = models.CharField(
         max_length=200,
@@ -90,7 +102,8 @@ class Product(models.Model):
         blank=True,
         verbose_name="Описание",
     )
-    image_preview = models.ImageField(upload_to='product_preview_images/',verbose_name="Превью", default="default.jpg", blank=True, null=True)
+    image_preview = models.ImageField(upload_to='product_preview_images/', verbose_name="Превью", default="default.jpg",
+                                      blank=True, null=True)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name="products", null=True, verbose_name="Бренд")
     category = models.ManyToManyField(
         Category,
@@ -116,9 +129,12 @@ class Product(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images", null=True, blank=False)
     image = models.ImageField(upload_to="product_images/", verbose_name="Фото")
+
     def __str__(self):
         return f"Изображение для {self.product.name}"
 
@@ -126,23 +142,29 @@ class ProductImage(models.Model):
         verbose_name = "Изображение товаров"
         verbose_name_plural = "Изображения товаров"
 
+
 class ProductCharacteristic(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='characteristics')
     name = models.CharField(max_length=255)
     value = models.CharField(max_length=255)
+
     class Meta:
         verbose_name = "Характеристика товара"
         verbose_name_plural = "Характеристики товара"
+
     def __str__(self):
         return f"{self.product.name}: {self.name}: {self.value}"
+
 
 class CartItem(models.Model):
     cart = models.ForeignKey('Cart', on_delete=models.CASCADE, related_name='cart_items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
+
     class Meta:
         verbose_name = "Элемент корзины"
         verbose_name_plural = "Элементы корзины"
+
     def get_total_price(self):
         total = self.product.price * self.quantity
         return total
@@ -150,13 +172,16 @@ class CartItem(models.Model):
 
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="cart")
+
     class Meta:
         verbose_name = "Корзина пользователя"
         verbose_name_plural = "Корзины пользователей"
+
     def get_total_price(self):
         total = 0
         for item in self.cart_items.all():
             total += item.get_total_price()
         return total
+
     def __str__(self):
         return self.user.username

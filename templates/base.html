@@ -26,12 +26,7 @@
                         <a class="nav-link" href="{% url 'admin:index' %}">Админ панель</a>
                     </li>
                 {% endif %}
-                {% if user.is_authenticated %}
-                    <form action="{% url 'logout' %}?next=/" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="nav-link">Выйти из аккаунта</button>
-                    </form>
-                {% endif %}
+                
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'catalog' %}">Каталог</a>
                     {#                        </li><li class="nav-item">#}
@@ -42,7 +37,7 @@
                             <a class="nav-link" href="">Корзина</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'profile' %}">Личный кабинет</a>
+                            <a class="nav-link" href="{% url 'profile' %}">Мой профиль</a>
                         </li>
                     {% else %}
                         <li class="nav-item">

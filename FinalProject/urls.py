@@ -15,23 +15,22 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.contrib.auth import views
+from django.contrib.auth import views as auth_views
 from django.urls import path, include
 
-from shop.views import BaseView, ProductListView, display_image, ProductDetailView, ProductListWithFilterView, \
-    RegisterView, MyLoginView, profile
+from shop import views
 
 urlpatterns = [
 
     path('admin/', admin.site.urls, name='admin'),
-    path('base/', BaseView.as_view(), name='base'),
-    path('product_list/', ProductListView.as_view(), name='product-list'),
-    path("media/<path:path_to_image>", display_image, name="display-image"),
-    path('product/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
-    path('', ProductListWithFilterView.as_view(), name='catalog'),
+    path('base/', views.BaseView.as_view(), name='base'),
+    path('product_list/', views.ProductListView.as_view(), name='product-list'),
+    path("media/<path:path_to_image>", views.display_image, name="display-image"),
+    path('product/<int:pk>/', views.ProductDetailView.as_view(), name='product-detail'),
+    path('', views.ProductListWithFilterView.as_view(), name='catalog'),
     path('accounts/', include('django.contrib.auth.urls')),
-    path("logout/", views.LogoutView.as_view(), name="logout"),
-    path('login/', MyLoginView.as_view(), name='login'),
-    path('register/', RegisterView.as_view(), name='register'),
-    path("profile/", profile, name="profile"),
+    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
+    path('login/', views.MyLoginView.as_view(), name='login'),
+    path('register/', views.RegisterView.as_view(), name='register'),
+    path("profile/", views.ProfileView.as_view(), name="profile"),
 ]
