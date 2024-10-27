@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Корзина</h2>
+
+                {% if cart_items %}
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Товар</th>
+                            <th>Количество</th>
+                            <th>Цена за единицу</th>
+                            <th>Общая цена</th>
+                            <th>Действия</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in cart_items %}
+                            <tr>
+                                <td><a href="{% url 'product-detail' item.product.id %}">{{ item.product.name }}</a>
+                                </td>
+                                <td>
+                                    <div class="input-group">
+                      <span class="input-group-btn">
+                          <button class="btn btn-sm btn-secondary" type="button" data-product-id="{{ item.product.id }}"
+                                  data-action="decrement">-</button>
+                      </span>
+                                        <input type="text" class="form-control form-control-sm"
+                                               value="{{ item.quantity }}" data-product-id="{{ item.product.id }}"
+                                               data-action="quantity">
+                                        <span class="input-group-btn">
+                          <button class="btn btn-sm btn-secondary" type="button" data-product-id="{{ item.product.id }}"
+                                  data-action="increment">+</button>
+                    </span>
+                                    </div>
+                                </td>
+                                <td>{{ item.product.price|floatformat:2 }}</td>
+                                <td>{{ item.total_price|floatformat:2 }}</td>
+                                <td>
+                                    <a href="{% url 'remove-from-cart' item.id %}"
+                                       class="btn btn-danger remove-cart-item"
+                                       data-cart-item-id="{{ cart_item.id }}"
+                                       data-product-name="{{ cart_item.product.name }}">
+                                        Удалить
+                                    </a>
+
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td colspan="3">Общая сумма</td>
+                            <td>{{ total_price|floatformat:2 }}</td>
+                            <td></td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                    {#        <a href="{% url 'checkout' %}" class="btn btn-primary">Оформить заказ</a>#}
+                    <a href="{% url 'checkout' %}" class="btn btn-primary">Оформить заказ</a>
+                    
+                {% else %}
+                    <p>Ваша корзина пуста.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <script>
+        // JavaScript для обновления количества
+        const decrementButtons = document.querySelectorAll('button[data-action="decrement"]');
+        const incrementButtons = document.querySelectorAll('button[data-action="increment"]');
+        const quantityInputs = document.querySelectorAll('input[data-action="quantity"]');
+
+        decrementButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                const productId = this.dataset.productId;
+                const input = document.querySelector(`input[data-product-id="${productId}"][data-action="quantity"]`);
+                let quantity = parseInt(input.value);
+                if (quantity > 1) {
+                    quantity--;
+                    input.value = quantity;
+                    updateCartQuantity(productId, quantity);
+                } else {
+
+                }
+            });
+        });
+
+        incrementButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                const productId = this.dataset.productId;
+                const input = document.querySelector(`input[data-product-id="${productId}"][data-action="quantity"]`);
+                let quantity = parseInt(input.value);
+                quantity++;
+                input.value = quantity;
+                updateCartQuantity(productId, quantity);
+            });
+        });
+
+        function updateCartQuantity(productId, quantity) {
+            fetch(`{% url 'update-cart-quantity' %}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    quantity: quantity
+                })
+            })
+                .then(response => {
+                    // Обработка ответа от сервера (например, перерисовка таблицы)
+                    console.log("Количество обновлено!");
+                    // ... (добавьте здесь код, который обновляет таблицу корзины) ...
+                })
+                .catch(error => {
+                    console.error('Ошибка обновления корзины:', error);
+                });
+        }
+    </script>
+{% endblock %}

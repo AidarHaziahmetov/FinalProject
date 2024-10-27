@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="container position-absolute bottom-50 end-0"><h2>Подтверждение удаления</h2>
+                <p>Вы действительно хотите удалить товар
+                    <mark>{{ cart_item.product.name }}</mark>
+                    из корзины?
+                </p>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="cart_item_id" value="{{ cart_item.id }}">
+
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                    <a href="{% url 'cart' %}" class="btn btn-secondary">Отмена</a>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
