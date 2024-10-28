@@ -77,38 +77,9 @@
             {% endif %}
             {% if user.is_manager or user.is_admin %}
                 <a id="update-btn" href="{% url 'product-update' product.id %}" class="btn btn-warning">Обновить данные</a>
-                <a id="delete-btn" href="" class="btn btn-danger">Удалить</a>
+                <a href="{% url 'product-delete' product.pk %}" class="btn btn-danger">Удалить</a>
             {% endif %}
         </div>
     </div>
 
 {% endblock %}
-{#{% block scripts %}#}
-{#    <script>#}
-{#        const addToCartBtn = document.getElementById('add-to-cart-btn');#}
-{#        const cartCount = document.getElementById('cart-count');#}
-{##}
-{#        addToCartBtn.addEventListener('click', function (event) {#}
-{#            event.preventDefault(); // Предотвращаем переход по ссылке#}
-{##}
-{#            const productId = this.dataset.productId;#}
-{#            let cartCountValue = parseInt(this.dataset.cartCount, 10);#}
-{##}
-{#            // Увеличиваем количество товара в корзине#}
-{#            cartCountValue++;#}
-{##}
-{#            // Обновляем текст кнопки#}
-{#            this.textContent = `В корзине: ${cartCountValue}`;#}
-{#            this.removeEventListener('click', arguments.callee);#}
-{##}
-{#            // Обновляем общее количество в корзине#}
-{#            cartCount.textContent = cartCountValue;#}
-{##}
-{#            // Обновляем ссылку на добавление в корзину#}
-{#            this.href = `{% url 'add-to-cart' product.id %}?quantity=${cartCountValue}`;#}
-{##}
-{#            // Удаляем атрибут data-cart-count, чтобы кнопка не реагировала повторно#}
-{#            this.removeAttribute('data-cart-count');#}
-{#        });#}
-{#    </script>#}
-{#{% endblock %}#}

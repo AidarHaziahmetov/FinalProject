@@ -28,6 +28,7 @@ urlpatterns = [
     # path('product_create/', views.ProductCreateView.as_view(), name='product-list'),
     path("media/<path:path_to_image>", views.display_image, name="display-image"),
     path('product/<int:pk>/', views.ProductDetailView.as_view(), name='product-detail'),
+    path('product/create', views.ProductCreateView.as_view(), name='product-create'),
     path('product/<int:pk>/update', views.ProductUpdateView.as_view(), name='product-update'),
     path('', views.ProductListWithFilterView.as_view(), name='catalog'),
     path('accounts/', include('django.contrib.auth.urls')),
@@ -41,6 +42,7 @@ urlpatterns = [
     path('update_cart_quantity/', views.UpdateCartQuantityView.as_view(), name='update-cart-quantity'),
     path('checkout/', views.CheckoutView.as_view(), name='checkout'),
     path('order_success/', views.OrderSuccessView.as_view(), name='order-success'),
-    path('order_detail/<int:pk>/',views.OrderDetail.as_view(), name='order-detail'),
+    path('order_detail/<int:pk>/', views.OrderDetail.as_view(), name='order-detail'),
+    path('product/<int:pk>/delete/', views.ProductDeleteView.as_view(), name='product-delete'),
 
 ]

@@ -11,7 +11,7 @@
 
                 <form method="POST">
                     {% csrf_token %}
-                    <input type="hidden" name="cart_item_id" value="{{ cart_item.id }}">
+                        <input type="hidden" name="cart_item_id" value="{{ cart_item.id }}">
 
                     <button type="submit" class="btn btn-danger">Удалить</button>
                     <a href="{% url 'cart' %}" class="btn btn-secondary">Отмена</a>

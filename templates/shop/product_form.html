@@ -1,10 +1,23 @@
 {% extends 'base.html' %}
 
+    {% block title %}
+        {% if product.id %}
+            Обновление товара
+        {% else %}
+            Добавление товара
+        {% endif %}
+    {% endblock %}
+
 {% block content %}
-<h1>Обновление товара</h1>
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Обновить</button>
-</form>
+    {% if product.id %}
+        <h1>Обновление товара</h1>
+    {% else %}
+        <h1>Добавление товара</h1>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Обновить</button>
+    </form>
 {% endblock %}

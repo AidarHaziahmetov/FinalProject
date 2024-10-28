@@ -234,11 +234,34 @@ class ProductUpdateView(UpdateView):
     form_class = forms.ProductForm
 
     def form_valid(self, form):
-        # Проверяем, что self.object обновляется
-        print(f"self.object before save: {self.object}")
+        # Сохраняем изменения основного продукта
         response = super().form_valid(form)
+
+        # Обрабатываем категории
+        categories = form.cleaned_data.get('category')
+        if categories:
+            self.object.category.set(categories)
+
+        # Обрабатываем бренд
+        brand = form.cleaned_data.get('brand')
+        if brand:
+            self.object.brand = brand
+
+        # Обрабатываем изображения
+        images = form.cleaned_data.get('images')
+        if images:
+            for image in images:
+                models.ProductImage.objects.create(product=self.object, image=image)
+
+        # Обработка удаления изображений
+        for i, image in enumerate(self.object.images.all()):
+            delete_flag = form.cleaned_data.get(f'delete_image_{i}')
+            if delete_flag:
+                image.delete()
+
+        # Сохраняем изменения продукта
         self.object.save()
-        print(f"self.object after save: {self.object}")
+
         return response
     def get_success_url(self):
         if isinstance(self.object, models.Product):
@@ -253,54 +276,29 @@ class ProductUpdateView(UpdateView):
         obj = super().get_object()
         print(f"obj: {obj}")
         return obj
-# class ProductCreateView(FormView):
-#     template_name = 'shop/create_update_form.html'
-#     form_class = forms.ProductForm
-#     success_url = reverse_lazy('catalog')
-#
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['brand_form'] = forms.BrandForm()
-#         return context
-#     def form_valid(self, form):
-#         product = form.save(commit=False)
-#         brand_name = form.cleaned_data.get('brand')
-#
-#         if brand_name == 'new':
-#             # Новый бренд
-#             brand_form = forms.BrandForm(self.request.POST)
-#             if brand_form.is_valid():
-#                 brand = brand_form.save()
-#                 product.brand = brand
-#                 product.save()
-#         else:
-#             # Выбран существующий бренд
-#             product.save()
-#
-#         # Сохраняем характеристики товара, если они были введены
-#         characteristics = form.cleaned_data.get('characteristics')
-#         if characteristics:
-#             for characteristic in characteristics:
-#                 models.ProductCharacteristic.objects.create(
-#                     product=product,
-#                     name=characteristic['name'],
-#                     value=characteristic['value']
-#                 )
-#
-#         categories = form.cleaned_data.get('categories')
-#         if categories:
-#             for category in categories:
-#                 models.ProductCharacteristic.objects.create(
-#                     name=category['name'],
-#                     perent=category['perent']
-#                 )
-#                 product.categories.add(category)
-#
-#         # Сохраняем изображения товара, если они были загружены
-#         images = form.cleaned_data.get('images')
-#         if images:
-#             for image in images:
-#                 product_image = models.ProductImage.objects.create(image=image)
-#                 product.images.add(product_image)
-#
-#         return super().form_valid(form)
+class ProductCreateView(CreateView):
+    model = models.Product
+    form_class = forms.ProductForm
+    template_name = 'shop/product_form.html'  # Используем тот же шаблон
+    success_url = reverse_lazy('product-list')  # Перенаправляем на список товаров
+
+    def form_valid(self, form):
+        # Сохраняем новый продукт
+        self.object = form.save()  # Сохраняем продукт
+
+        # Обработка изображений
+        images = form.cleaned_data.get('images')
+        if images:
+            for image in images.getlist('images'):
+                models.ProductImage.objects.create(product=self.object, image=image)
+
+                # Возвращаем ответ
+        return super().form_valid(form)
+
+class ProductDeleteView(DeleteView):
+    model = models.Product
+    success_url = reverse_lazy('product_list')
+    template_name = 'shop/product_confirm_delete.html'  # Используйте шаблон подтверждения удаления
+
+    def get_success_url(self):
+        return reverse_lazy('product_list')
