@@ -25,6 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls, name='admin'),
     path('base/', views.BaseView.as_view(), name='base'),
     path('product_list/', views.ProductListView.as_view(), name='product-list'),
+    path('product_create/', views.ProductCreateView.as_view(), name='product-list'),
     path("media/<path:path_to_image>", views.display_image, name="display-image"),
     path('product/<int:pk>/', views.ProductDetailView.as_view(), name='product-detail'),
     path('', views.ProductListWithFilterView.as_view(), name='catalog'),

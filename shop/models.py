@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
+
 class User(AbstractUser):
     ROLE_CHOICES = (
         ("admin", "Администратор"),
@@ -168,8 +169,10 @@ class Cart(models.Model):
         for item in self.cart_items.all():
             total += item.get_total_price()
         return total
+
     def __str__(self):
         return self.user.username
+
 
 class CartItem(models.Model):
     cart = models.ForeignKey('Cart', on_delete=models.CASCADE, related_name='cart_items')
@@ -183,6 +186,7 @@ class CartItem(models.Model):
     def get_total_price(self):
         total = self.product.price * self.quantity
         return total
+
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
@@ -203,6 +207,7 @@ class Order(models.Model):
     def __str__(self):
         return f"Заказ #{self.id}"
 
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -214,4 +219,3 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"Товар: {self.product.name}, Количество: {self.quantity}"
-
