@@ -5,10 +5,10 @@ from django.contrib.auth.views import LoginView
 from django.db.models import F
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views import View
 
-from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView, CreateView
+from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView, CreateView, UpdateView
 import os
 from PIL import Image
 from django_filters.views import FilterView
@@ -228,66 +228,79 @@ class OrderDetail(LoginRequiredMixin, DetailView):
         else:
             return JsonResponse({'success': False, 'message': 'Чужие заказы смотреть не хорошо!'})
 
-class ProductCreateView(FormView):
-    template_name = 'shop/create_update_form.html'
+class ProductUpdateView(UpdateView):
+    template_name = "shop/product_form.html"
+    model = models.Product
     form_class = forms.ProductForm
-    success_url = reverse_lazy('catalog')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['brand_form'] = forms.BrandForm()
-        return context
     def form_valid(self, form):
-        product = form.save(commit=False)
-        brand_name = form.cleaned_data.get('brand')
-
-        if brand_name == 'new':
-            # Новый бренд
-            brand_form = forms.BrandForm(self.request.POST)
-            if brand_form.is_valid():
-                brand = brand_form.save()
-                product.brand = brand
-                product.save()
+        # Проверяем, что self.object обновляется
+        print(f"self.object before save: {self.object}")
+        response = super().form_valid(form)
+        self.object.save()
+        print(f"self.object after save: {self.object}")
+        return response
+    def get_success_url(self):
+        if isinstance(self.object, models.Product):
+            return reverse('product-detail', kwargs={'pk': self.object.pk})
         else:
-            # Выбран существующий бренд
-            product.save()
+            # Обрабатываем случай, когда self.object не является Product
+            return reverse('product-list')
 
-        # Сохраняем характеристики товара, если они были введены
-        characteristics = form.cleaned_data.get('characteristics')
-        if characteristics:
-            for characteristic in characteristics:
-                models.ProductCharacteristic.objects.create(
-                    product=product,
-                    name=characteristic['name'],
-                    value=characteristic['value']
-                )
-
-        categories = form.cleaned_data.get('categories')
-        if categories:
-            for category in categories:
-                models.ProductCharacteristic.objects.create(
-                    name=category['name'],
-                    perent=category['perent']
-                )
-                product.categories.add(category)
-
-        # Сохраняем изображения товара, если они были загружены
-        images = form.cleaned_data.get('images')
-        if images:
-            for image in images:
-                product_image = models.ProductImage.objects.create(image=image)
-                product.images.add(product_image)
-
-        return super().form_valid(form)
-
-
-def create_brand(request):
-    if request.method == 'POST':
-        form = forms.BrandForm(request.POST)
-        if form.is_valid():
-            brand = form.save()
-            return JsonResponse({'id': brand.id, 'name': brand.name})
-        else:
-            return JsonResponse({'errors': form.errors}, status=400)
-    else:
-        return JsonResponse({'error': 'Invalid request method.'}, status=405)
+    def get_object(self):
+        # Добавляем отладку
+        print(f"pk: {self.kwargs.get('pk')}")
+        obj = super().get_object()
+        print(f"obj: {obj}")
+        return obj
+# class ProductCreateView(FormView):
+#     template_name = 'shop/create_update_form.html'
+#     form_class = forms.ProductForm
+#     success_url = reverse_lazy('catalog')
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['brand_form'] = forms.BrandForm()
+#         return context
+#     def form_valid(self, form):
+#         product = form.save(commit=False)
+#         brand_name = form.cleaned_data.get('brand')
+#
+#         if brand_name == 'new':
+#             # Новый бренд
+#             brand_form = forms.BrandForm(self.request.POST)
+#             if brand_form.is_valid():
+#                 brand = brand_form.save()
+#                 product.brand = brand
+#                 product.save()
+#         else:
+#             # Выбран существующий бренд
+#             product.save()
+#
+#         # Сохраняем характеристики товара, если они были введены
+#         characteristics = form.cleaned_data.get('characteristics')
+#         if characteristics:
+#             for characteristic in characteristics:
+#                 models.ProductCharacteristic.objects.create(
+#                     product=product,
+#                     name=characteristic['name'],
+#                     value=characteristic['value']
+#                 )
+#
+#         categories = form.cleaned_data.get('categories')
+#         if categories:
+#             for category in categories:
+#                 models.ProductCharacteristic.objects.create(
+#                     name=category['name'],
+#                     perent=category['perent']
+#                 )
+#                 product.categories.add(category)
+#
+#         # Сохраняем изображения товара, если они были загружены
+#         images = form.cleaned_data.get('images')
+#         if images:
+#             for image in images:
+#                 product_image = models.ProductImage.objects.create(image=image)
+#                 product.images.add(product_image)
+#
+#         return super().form_valid(form)

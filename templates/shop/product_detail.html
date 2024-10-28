@@ -76,7 +76,7 @@
                 <button class="btn btn-secondary disable" disabled>Добавить в корзину</button>
             {% endif %}
             {% if user.is_manager or user.is_admin %}
-                <a id="update-btn" href="" class="btn btn-warning">Обновить данные</a>
+                <a id="update-btn" href="{% url 'product-update' product.id %}" class="btn btn-warning">Обновить данные</a>
                 <a id="delete-btn" href="" class="btn btn-danger">Удалить</a>
             {% endif %}
         </div>
