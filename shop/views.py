@@ -5,10 +5,10 @@ from django.contrib.auth.views import LoginView
 from django.db.models import F
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views import View
 
-from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView, CreateView
+from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView, CreateView, UpdateView
 import os
 from PIL import Image
 from django_filters.views import FilterView
@@ -227,3 +227,78 @@ class OrderDetail(LoginRequiredMixin, DetailView):
             return context
         else:
             return JsonResponse({'success': False, 'message': 'Чужие заказы смотреть не хорошо!'})
+
+class ProductUpdateView(UpdateView):
+    template_name = "shop/product_form.html"
+    model = models.Product
+    form_class = forms.ProductForm
+
+    def form_valid(self, form):
+        # Сохраняем изменения основного продукта
+        response = super().form_valid(form)
+
+        # Обрабатываем категории
+        categories = form.cleaned_data.get('category')
+        if categories:
+            self.object.category.set(categories)
+
+        # Обрабатываем бренд
+        brand = form.cleaned_data.get('brand')
+        if brand:
+            self.object.brand = brand
+
+        # Обрабатываем изображения
+        images = form.cleaned_data.get('images')
+        if images:
+            for image in images:
+                models.ProductImage.objects.create(product=self.object, image=image)
+
+        # Обработка удаления изображений
+        for i, image in enumerate(self.object.images.all()):
+            delete_flag = form.cleaned_data.get(f'delete_image_{i}')
+            if delete_flag:
+                image.delete()
+
+        # Сохраняем изменения продукта
+        self.object.save()
+
+        return response
+    def get_success_url(self):
+        if isinstance(self.object, models.Product):
+            return reverse('product-detail', kwargs={'pk': self.object.pk})
+        else:
+            # Обрабатываем случай, когда self.object не является Product
+            return reverse('product-list')
+
+    def get_object(self):
+        # Добавляем отладку
+        print(f"pk: {self.kwargs.get('pk')}")
+        obj = super().get_object()
+        print(f"obj: {obj}")
+        return obj
+class ProductCreateView(CreateView):
+    model = models.Product
+    form_class = forms.ProductForm
+    template_name = 'shop/product_form.html'  # Используем тот же шаблон
+    success_url = reverse_lazy('product-list')  # Перенаправляем на список товаров
+
+    def form_valid(self, form):
+        # Сохраняем новый продукт
+        self.object = form.save()  # Сохраняем продукт
+
+        # Обработка изображений
+        images = form.cleaned_data.get('images')
+        if images:
+            for image in images.getlist('images'):
+                models.ProductImage.objects.create(product=self.object, image=image)
+
+                # Возвращаем ответ
+        return super().form_valid(form)
+
+class ProductDeleteView(DeleteView):
+    model = models.Product
+    success_url = reverse_lazy('product_list')
+    template_name = 'shop/product_confirm_delete.html'  # Используйте шаблон подтверждения удаления
+
+    def get_success_url(self):
+        return reverse_lazy('product_list')
