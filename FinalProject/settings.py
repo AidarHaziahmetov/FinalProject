@@ -40,9 +40,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_bootstrap5',
     'django_filters',
-    'shop'
+    "rest_framework",
+    'shop',
+    "drf_spectacular",
 
 ]
+
+REST_FRAMEWORK = {"DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

@@ -17,13 +17,20 @@ Including another URLconf
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path, include
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 from shop import views
+from rest_framework.routers import DefaultRouter
 
+router = DefaultRouter()
+router.register('categories', views.CategoryAPI, basename='categories')
+router.register('products', views.ProductAPI, basename='products')
+router.register('brands', views.BrandAPI, basename='brands')
 urlpatterns = [
 
     path('admin/', admin.site.urls, name='admin'),
-    path('base/', views.BaseView.as_view(), name='base'),
+    path("schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("swagger/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger"),
     path('product_list/', views.ProductListView.as_view(), name='product-list'),
     # path('product_create/', views.ProductCreateView.as_view(), name='product-list'),
     path("media/<path:path_to_image>", views.display_image, name="display-image"),
@@ -45,4 +52,4 @@ urlpatterns = [
     path('order_detail/<int:pk>/', views.OrderDetail.as_view(), name='order-detail'),
     path('product/<int:pk>/delete/', views.ProductDeleteView.as_view(), name='product-delete'),
 
-]
+] + router.urls
