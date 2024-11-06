@@ -12,8 +12,9 @@
 <body>
 <header class="container-fluid p-0">
     <nav class="navbar navbar-expand-lg navbar-secondary bg-secondary">
-        <a class="navbar-brand" href="{% url 'catalog' %}">
-            <img src="" alt="Логотип магазина">
+        <a class="navbar-brand ms-3 " href="{% url 'catalog' %}">
+            <img src="{% static 'logo.png' %}" alt="Логотип магазина" height="30" class="me-2">
+            Магазин одежды
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
                 aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
