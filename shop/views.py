@@ -1,5 +1,7 @@
+import os
+
+from PIL import Image
 from django.conf import LazySettings
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.db.models import F
@@ -7,16 +9,15 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views import View
-
 from django.views.generic import TemplateView, ListView, DetailView, FormView, DeleteView, CreateView, UpdateView
-import os
-from PIL import Image
 from django_filters.views import FilterView
+from rest_framework import viewsets
 from rest_framework.utils import json
 
 from shop import filters
 from shop import forms
 from shop import models
+from shop import serializers
 
 settings = LazySettings()
 
@@ -193,6 +194,7 @@ class CheckoutView(LoginRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         cart = models.Cart.objects.filter(user=self.request.user).first()
         cart_items = cart.cart_items.all()
+
         context["cart_items"] = cart_items
         return context
     def form_valid(self, form):
@@ -202,9 +204,12 @@ class CheckoutView(LoginRequiredMixin, CreateView):
         order.user = self.request.user
         order.save()
         for cart_item in cart_items:
+            product = cart_item.product
+            product.stock -= cart_item.quantity
+            product.save()
             models.OrderItem.objects.create(
                 order=order,
-                product=cart_item.product,
+                product=product,
                 quantity=cart_item.quantity,
                 price=cart_item.product.price
             )
@@ -302,3 +307,16 @@ class ProductDeleteView(DeleteView):
 
     def get_success_url(self):
         return reverse_lazy('product_list')
+
+class CategoryAPI(viewsets.ModelViewSet):
+    queryset = models.Category.objects.all()
+    serializer_class = serializers.CategorySerializer
+
+class ProductAPI(viewsets.ModelViewSet):
+    queryset = models.Product.objects.all()
+    serializer_class = serializers.ProductSerializer
+
+class BrandAPI(viewsets.ModelViewSet):
+    queryset = models.Brand.objects.all()
+    serializer_class = serializers.BrandSerializer
+

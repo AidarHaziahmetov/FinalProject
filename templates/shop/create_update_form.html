@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Добавить новый товар</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="fieldWrapper">
+                {{ field.errors }}
+                {{ field.label_tag }} {{ field }}
+                {% if field.name == 'brand' %}
+                    <button type="button" id="create-brand-button" class="btn btn-secondary my-2">Создать бренд</button>
+                    <div class="row">
+                        <div class="col-3">
+                            <div id="new-brand-form2" class="container p-2 border border-primary border-1 rounded" style="display: none;">
+                                <form method="post" id="new-brand-form">
+                                    <h3>Новый бренд</h3>
+                                    {{ brand_form.as_p }}
+                                    <button type="button" class="btn btn-primary" id="save-brand-button">Сохранить бренд
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary">Создать товар</button>
+    </form>
+{% endblock %}
+{% block scripts %}
+    <script>
+        const newBrandForm2 = document.getElementById('new-brand-form2');
+        const newBrandForm = document.getElementById('new-brand-form');
+        const createBrandButton = document.getElementById('create-brand-button');
+        const saveBrandButton = document.getElementById('save-brand-button');
+
+        // Показываем/скрываем форму создания бренда
+        createBrandButton.addEventListener('click', function () {
+            newBrandForm2.style.display = 'block';
+            createBrandButton.style.display = 'none';
+        });
+
+        saveBrandButton.addEventListener('click', function (event) {
+            event.preventDefault(); // Предотвращаем отправку стандартной формы
+
+            // Получаем данные из формы
+            const formData = new FormData(newBrandForm);
+
+            // Отправляем AJAX-запрос
+            fetch('/product/create_brand/', {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Успешная отправка формы
+                        return response.json(); // Получаем ответ от сервера
+                    } else {
+                        // Обработка ошибки
+                        throw new Error('Ошибка при создании бренда.');
+                    }
+                })
+                .then(data => {
+                    // Обновляем список брендов
+                    // 1. Получаем элемент списка брендов (например, `<select>`)
+                    const brandSelect = document.querySelector('#id_brand');
+
+                    // 2. Создаем новый элемент <option> для нового бренда
+                    const newOption = document.createElement('option');
+                    newOption.value = data.id; // Идентификатор нового бренда
+                    newOption.text = data.name; // Название нового бренда
+
+                    // 3. Добавляем новый элемент <option> в список брендов
+                    brandSelect.appendChild(newOption);
+
+                    // 4. Устанавливаем значение выбранного бренда
+                    brandSelect.value = data.id;
+
+                    // 5. Скрываем форму создания нового бренда
+                    newBrandForm.style.display = 'none';
+                    createBrandButton.style.display = 'block';
+
+                    // 6. Очищаем форму
+                    newBrandForm.reset();
+
+                    // 7. Отображаем сообщение об успехе (необязательно)
+                    alert('Бренд успешно создан!');
+                })
+                .catch(error => {
+                    // Отображаем сообщение об ошибке
+                    alert('Ошибка при создании бренда: ' + error.message);
+                });
+        });
+    </script>
+{% endblock %}

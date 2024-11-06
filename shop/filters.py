@@ -4,7 +4,10 @@ from django.db.models import Q
 from django_filters import FilterSet, widgets
 
 from shop import models
-
+class CustomSelectWidget(forms.Select):
+    def __init__(self, attrs=None):
+        super().__init__(attrs)
+        self.attrs.update({'class': 'form-select'})
 
 class MyRangeWidget(widgets.RangeWidget):
     def __init__(self, from_attrs=None, to_attrs=None, attrs=None):
@@ -26,6 +29,15 @@ class ProductFilter(FilterSet):
     category = django_filters.ModelMultipleChoiceFilter(field_name='category', label='Категории',
                                                         queryset=models.Category.objects.all(),
                                                         widget=forms.CheckboxSelectMultiple, method='filter_category')
+    order_by = django_filters.OrderingFilter(
+        fields=(('price', 'price'), ('-price', '-price'),),
+        widget=CustomSelectWidget,
+        label='Сортировка по цене',
+        choices=[
+            ('price', 'По возрастанию'),
+            ('-price', 'По убыванию'),
+        ],
+    )
 
     class Meta:
         model = models.Product
