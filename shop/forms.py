@@ -53,48 +53,48 @@ class MultipleFileField(forms.FileField):
 
 
 class ProductForm(forms.ModelForm):
-    category = forms.ModelMultipleChoiceField(
-        queryset=models.Category.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        label='Категории',
-    )
-    brand = forms.ModelChoiceField(
-        queryset=models.Brand.objects.all(),
-        label='Бренд',
-    )
-    images = MultipleFileField(
-        label="Добавить изображение",
-        required=False,
-    )
+    # category = forms.ModelMultipleChoiceField(
+    #     queryset=models.Category.objects.all(),
+    #     widget=forms.CheckboxSelectMultiple,
+    #     label='Категории',
+    # )
+    # brand = forms.ModelChoiceField(
+    #     queryset=models.Brand.objects.all(),
+    #     label='Бренд',
+    # )
+    # images = MultipleFileField(
+    #     label="Добавить изображение",
+    #     required=False,
+    # )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[field].widget.attrs = {'class': 'form-control'}
-        self.fields['category'].widget.attrs = {}
-        self.fields['images'].widget = MultipleFileInput()
-        self.fields['images'].widget.attrs['class'] = 'form-control'
+        # self.fields['category'].widget.attrs = {}
+        # self.fields['images'].widget = MultipleFileInput()
+        # self.fields['images'].widget.attrs['class'] = 'form-control'
 
     class Meta:
         model = models.Product
-        fields = '__all__'
+        fields = ['name','description','price','stock','image_preview']
 
     def save(self, commit=True):
-        product = super().save(commit=False)
+        product = super().save()
 
         # Обработка изображений
-        images = self.cleaned_data.get('images')
-        if images:
-            for image in images:
-                models.ProductImage.objects.create(product=product, image=image)
+        # images = self.cleaned_data.get('images')
+        # if images:
+        #     for image in images:
+        #         models.ProductImage.objects.create(product=product, image=image)
+        #
+        # # Обработка удаления изображений
+        # for i, image in enumerate(product.images.all()):
+        #     delete_flag = self.cleaned_data.get(f'delete_image_{i}')
+        #     if delete_flag:
+        #         image.delete()
 
-        # Обработка удаления изображений
-        for i, image in enumerate(product.images.all()):
-            delete_flag = self.cleaned_data.get(f'delete_image_{i}')
-            if delete_flag:
-                image.delete()
-
-        if commit:
-            product.save()
+        # if commit:
+        #     product.save()
         return product
 # ProductCharacteristicForm = inlineformset_factory(Product, ProductCharacteristic, extra=1, fields=('name', 'value'))
