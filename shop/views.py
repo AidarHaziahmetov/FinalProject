@@ -257,9 +257,9 @@ class ProductUpdateView(UpdateView):
         response = super().form_valid(form)
 
         # Обрабатываем категории
-        # categories = form.cleaned_data.get('category')
-        # if categories:
-        #     self.object.category.set(categories)
+        categories = form.cleaned_data.get('category')
+        if categories:
+            self.object.category.set(categories)
 
         # Обрабатываем бренд
         # brand = form.cleaned_data.get('brand')
@@ -279,7 +279,7 @@ class ProductUpdateView(UpdateView):
         #         image.delete()
 
         # Сохраняем изменения продукта
-        # self.object.save()
+        self.object.save()
 
         return response
 
@@ -289,7 +289,12 @@ class ProductUpdateView(UpdateView):
         else:
             # Обрабатываем случай, когда self.object не является Product
             return reverse('product-list')
-
+    def get_object(self):
+        # Добавляем отладку
+        # print(f"pk: {self.kwargs.get('pk')}")
+        obj = super().get_object()
+        # print(f"obj: {obj}")
+        return obj
 
 
 class ProductCreateView(CreateView):

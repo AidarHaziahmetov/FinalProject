@@ -53,11 +53,11 @@ class MultipleFileField(forms.FileField):
 
 
 class ProductForm(forms.ModelForm):
-    # category = forms.ModelMultipleChoiceField(
-    #     queryset=models.Category.objects.all(),
-    #     widget=forms.CheckboxSelectMultiple,
-    #     label='Категории',
-    # )
+    category = forms.ModelMultipleChoiceField(
+        queryset=models.Category.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        label='Категории',
+    )
     brand = forms.ModelChoiceField(
         queryset=models.Brand.objects.all(),
         label='Бренд',
@@ -71,7 +71,7 @@ class ProductForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[field].widget.attrs = {'class': 'form-control'}
-        # self.fields['category'].widget.attrs = {}
+        self.fields['category'].widget.attrs = {}
         # self.fields['images'].widget = MultipleFileInput()
         # self.fields['images'].widget.attrs['class'] = 'form-control'
 
