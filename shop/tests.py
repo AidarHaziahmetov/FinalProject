@@ -31,6 +31,7 @@ class ShopTestCase(TestCase):
         new_data['name'] = 'new_name'
         new_data['price'] += 10
         new_data['brand'] = self.product.brand.pk
+        new_data['category'] = [category.pk for category in list(self.product.category.all())]
         del new_data['brand_id']
         print(new_data)
         response = self.client.post(url, new_data)
@@ -57,7 +58,8 @@ class ShopTestCase(TestCase):
             'price': self.product.price + 1,
             'description': self.product.description,
             'stock': self.product.stock,
-            'brand': self.product.brand.pk
+            'brand': self.product.brand.pk,
+            'category': [category.pk for category in list(self.product.category.all())]
         })
         self.product.refresh_from_db()
         self.assertEqual(response.status_code, 302)
