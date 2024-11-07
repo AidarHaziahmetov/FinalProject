@@ -108,7 +108,7 @@ class Product(models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name="products", null=True, verbose_name="Бренд")
     category = models.ManyToManyField(
         Category,
-        related_name="clothes",
+        related_name="products",
         verbose_name="Категория",
         blank=False,
     )

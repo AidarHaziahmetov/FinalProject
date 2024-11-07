@@ -62,18 +62,18 @@ class ProductForm(forms.ModelForm):
         queryset=models.Brand.objects.all(),
         label='Бренд',
     )
-    # images = MultipleFileField(
-    #     label="Добавить изображение",
-    #     required=False,
-    # )
+    images = MultipleFileField(
+        label="Добавить изображение",
+        required=False,
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[field].widget.attrs = {'class': 'form-control'}
         self.fields['category'].widget.attrs = {}
-        # self.fields['images'].widget = MultipleFileInput()
-        # self.fields['images'].widget.attrs['class'] = 'form-control'
+        self.fields['images'].widget = MultipleFileInput()
+        self.fields['images'].widget.attrs['class'] = 'form-control'
 
     class Meta:
         model = models.Product
@@ -82,19 +82,18 @@ class ProductForm(forms.ModelForm):
     def save(self, commit=True):
         product = super().save()
 
-        # Обработка изображений
-        # images = self.cleaned_data.get('images')
-        # if images:
-        #     for image in images:
-        #         models.ProductImage.objects.create(product=product, image=image)
-        #
-        # # Обработка удаления изображений
-        # for i, image in enumerate(product.images.all()):
-        #     delete_flag = self.cleaned_data.get(f'delete_image_{i}')
-        #     if delete_flag:
-        #         image.delete()
+        images = self.cleaned_data.get('images')
+        if images:
+            for image in images:
+                models.ProductImage.objects.create(product=product, image=image)
 
-        # if commit:
-        #     product.save()
+
+        for i, image in enumerate(product.images.all()):
+            delete_flag = self.cleaned_data.get(f'delete_image_{i}')
+            if delete_flag:
+                image.delete()
+
+        if commit:
+            product.save()
         return product
 # ProductCharacteristicForm = inlineformset_factory(Product, ProductCharacteristic, extra=1, fields=('name', 'value'))

@@ -262,21 +262,21 @@ class ProductUpdateView(UpdateView):
             self.object.category.set(categories)
 
         # Обрабатываем бренд
-        # brand = form.cleaned_data.get('brand')
-        # if brand:
-        #     self.object.brand = brand
+        brand = form.cleaned_data.get('brand')
+        if brand:
+            self.object.brand = brand
 
         # Обрабатываем изображения
-        # images = form.cleaned_data.get('images')
-        # if images:
-        #     for image in images:
-        #         models.ProductImage.objects.create(product=self.object, image=image)
-        #
-        # # Обработка удаления изображений
-        # for i, image in enumerate(self.object.images.all()):
-        #     delete_flag = form.cleaned_data.get(f'delete_image_{i}')
-        #     if delete_flag:
-        #         image.delete()
+        images = form.cleaned_data.get('images')
+        if images:
+            for image in images:
+                models.ProductImage.objects.create(product=self.object, image=image)
+
+        # Обработка удаления изображений
+        for i, image in enumerate(self.object.images.all()):
+            delete_flag = form.cleaned_data.get(f'delete_image_{i}')
+            if delete_flag:
+                image.delete()
 
         # Сохраняем изменения продукта
         self.object.save()
@@ -305,13 +305,13 @@ class ProductCreateView(CreateView):
 
     def form_valid(self, form):
         # Сохраняем новый продукт
-        # self.object = form.save()  # Сохраняем продукт
+        self.object = form.save()  # Сохраняем продукт
 
         # Обработка изображений
-        # images = form.cleaned_data.get('images')
-        # if images:
-        #     for image in images.getlist('images'):
-        #         models.ProductImage.objects.create(product=self.object, image=image)
+        images = form.cleaned_data.get('images')
+        if images:
+            for image in images.getlist('images'):
+                models.ProductImage.objects.create(product=self.object, image=image)
 
                 # Возвращаем ответ
         return super().form_valid(form)
