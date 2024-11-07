@@ -58,10 +58,10 @@ class ProductForm(forms.ModelForm):
     #     widget=forms.CheckboxSelectMultiple,
     #     label='Категории',
     # )
-    # brand = forms.ModelChoiceField(
-    #     queryset=models.Brand.objects.all(),
-    #     label='Бренд',
-    # )
+    brand = forms.ModelChoiceField(
+        queryset=models.Brand.objects.all(),
+        label='Бренд',
+    )
     # images = MultipleFileField(
     #     label="Добавить изображение",
     #     required=False,

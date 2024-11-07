@@ -129,7 +129,7 @@ class Product(models.Model):
         return self.stock > 0
 
     def __str__(self) -> str:
-        return self.name
+        return self.name + (" "+self.brand.name) if self.brand else ''
 
 
 class ProductImage(models.Model):
@@ -206,7 +206,9 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Заказ #{self.id}"
-
+    class Meta:
+        verbose_name = "Заказ"
+        verbose_name_plural = "Заказы"
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
@@ -219,3 +221,6 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"Товар: {self.product.name}, Количество: {self.quantity}"
+    class Meta:
+        verbose_name = "Элемент заказа"
+        verbose_name_plural = "Элементы заказов"

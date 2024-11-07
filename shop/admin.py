@@ -45,3 +45,10 @@ class ProductAdmin(admin.ModelAdmin):
 @admin.register(models.Cart)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ("user",)
+
+@admin.register(models.OrderItem)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ("product", "order")
+@admin.register(models.Order)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ("user",)
